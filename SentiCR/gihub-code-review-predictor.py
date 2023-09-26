@@ -20,20 +20,19 @@
 __author__ = "Justin Ribeiro <justin@justinribeiro.com>"
 
 from SentiCR import SentiCR
+from pathlib import Path
 
 import pandas as pd
-import numpy as np
-from sklearn.metrics import classification_report
 import time
 
 sentiment_analyzer = SentiCR(
     pretrained_model="gh-trainingset-pr-code-reviews-2023-09-20-17:16:33.joblib"
 )
 
-from pathlib import Path
 
 jdr_data = Path("/work/src/SentiCR/SentiCR/")
 gh_review_comments = jdr_data / "data-review-comments-raw.pkl"
+
 
 def predict_gh():
     begin = time.time()
@@ -49,7 +48,9 @@ def predict_gh():
         df.loc[idx, "score"] = sentiment[0]
         predictionEnd = time.time()
         timer = predictionEnd - predicationBegin
-        print(f"{timer:.4f}s {df.loc[idx, 'score']}: {id}: {(review[:50] + '...') if len(review) > 75 else review}")
+        print(
+            f"{timer:.4f}s {df.loc[idx, 'score']}: {id}: {(review[:50] + '...') if len(review) > 75 else review}"
+        )
 
     end = time.time()
     totalPredictionTime = end - begin
@@ -57,5 +58,6 @@ def predict_gh():
         f"Total Prediction time {totalPredictionTime:.2f} seconds for {df.shape[0]} PR code reviews"
     )
     df.to_csv("./senticr_data_run.csv", header=True)
+
 
 predict_gh()
